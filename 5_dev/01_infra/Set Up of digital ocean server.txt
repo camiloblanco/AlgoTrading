@@ -1,0 +1,23 @@
+1. Create new basic droplet in digital ocean account
+
+2. Create an SHH Key using Putty
+
+3. Changed the droplet root password
+
+Root password: queenAlgo2021!
+
+4. Access uding SSH (Putty)
+
+DigitalOcean_CB, pass: Alfeios051182!
+
+5. Create a new user and set a firewirewall and copy ssh
+
+From: https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-18-04
+
+-- sudo adduser kblancov
+-- usermod -aG sudo kblancov
+
+--ufw allow OpenSSH
+--ufw enable
+
+-- rsync --archive --chown=kblancov:kblancov ~/.ssh /home/kblancov
