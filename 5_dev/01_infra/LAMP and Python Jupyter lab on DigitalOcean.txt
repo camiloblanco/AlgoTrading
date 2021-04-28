@@ -1,0 +1,317 @@
+1. Create new droplet in digitalOcean
+
+- Select the minimun size required
+
+- Select the best datacenter
+http://speedtest-tor1.digitalocean.com/
+
+- Use SSH key 
+https://www.digitalocean.com/docs/droplets/how-to/add-ssh-keys/create-with-putty/
+- Use strong password (paraphrase) to encript key
+
+138.68.181.107
+
+
+2. Access using SSH (Putty) and update the server
+
+- key:DigitalOcean_CB,
+
+sudo apt-get update
+
+sudo apt-get upgrade
+
+
+3. Create Swap Space on Ubuntu 20.04 (Increasing virtual RAM)
+https://www.digitalocean.com/community/tutorials/how-to-add-swap-space-on-ubuntu-20-04
+https://devanswers.co/creating-swap-space-ubuntu-18-04/
+
+swapon --show
+
+sudo fallocate -l 7G /swapfile
+ls -lh /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+
+sudo sysctl vm.swappiness=10
+sudo sysctl vm.vfs_cache_pressure=50
+
+sudo nano /etc/sysctl.conf
+- Add this to the bottom of /etc/sysctl.conf
+vm.swappiness=10
+vm.vfs_cache_pressure=50
+
+swapon --show
+
+
+4. Create a new user, set firewall, copy ssh and allow FTP.
+
+- https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-20-04
+
+sudo adduser kblancov
+
+usermod -aG sudo kblancov
+
+ufw allow OpenSSH
+
+ufw enable
+
+- copy the shh key that was used to setup the server under root
+
+rsync --archive --chown=kblancov:kblancov ~/.ssh /home/kblancov
+
+sudo adduser kblancov www-data
+sudo chmod g+rwX -R /var/www
+sudo ln -s /var/www /home/kblancov/
+
+reboot
+
+5. Setup Acess using SSH (Putty) and FTP (Fillezilla)
+
+Putty
+
+ -> Connection -> Auth -> Browse for SSK private key file
+ -> Connection -> Data -> Auto-login username: kblancov
+ -> Session, set Ip, Set name and save.
+ 
+FileZilla
+ -> File -> Site Manager -> New Site
+ Protocol SFTP, Host IP, Port: 22, Logon Type: Key file, User, KeyFile.
+
+
+6.  Install Apache and configure a Virtual Host
+
+https://www.digitalocean.com/community/tutorials/how-to-install-the-apache-web-server-on-ubuntu-20-04
+
+sudo apt update
+sudo apt install apache2
+
+sudo ufw app list
+sudo ufw allow in "Apache Full"
+sudo ufw status
+
+sudo systemctl status apache2
+
+test: http://138.68.181.107
+
+- Add two A records to agiledisk.com domain @, www. to the IP.
+
+- Configure the virtual host
+sudo mkdir /var/www/agiledisk.com
+sudo chown -R $USER:$USER /var/www/agiledisk.com
+
+sudo chmod -R 755 /var/www/agiledisk.com
+
+sudo nano /var/www/agiledisk.com/index.html
+
+- Paste this content:
+
+<html>
+    <head>
+        <title>Welcome to Agile Disk</title>
+    </head>
+    <body>
+        <h1>Success!  The Agile Disk virtual host is working!</h1>
+		<h3> We are building something great for you!!! </h3>
+    </body>
+</html>
+
+- Create a virtual host file 
+
+sudo nano /etc/apache2/sites-available/agiledisk.com.conf
+
+- Paste this content:
+
+<VirtualHost *:80>
+    ServerAdmin webmaster@localhost
+    ServerName agiledisk.com
+    ServerAlias www.agiledisk.com
+    DocumentRoot /var/www/agiledisk.com
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+	
+	<Directory /var/www/agiledisk.com/>
+    AllowOverride All
+	</Directory>
+	
+</VirtualHost>
+
+- Enable the file with the a2ensite tool:
+
+sudo a2ensite agiledisk.com.conf
+
+sudo a2dissite 000-default.conf
+
+sudo apache2ctl configtest
+
+
+sudo systemctl restart apache2
+
+- Enable mod_rewrite so that we can utilize the WordPress permalink feature:
+
+sudo a2enmod rewrite
+
+sudo apache2ctl configtest
+
+- Add a ServerName directive to your main (global) Apache configuration file
+
+sudo nano /etc/apache2/apache2.conf
+
+ServerName 138.68.181.107
+
+- For the json error: Editing /etc/apache2/apache2.conf and changing
+
+AllowOverride None
+to
+AllowOverride All for /var/www.
+
+
+sudo apache2ctl configtest
+
+sudo systemctl restart apache2
+
+7.  Secure Apache with Let's Encrypt
+
+https://www.digitalocean.com/community/tutorials/how-to-secure-apache-with-let-s-encrypt-on-ubuntu-20-04
+
+sudo apt install certbot python3-certbot-apache
+
+sudo nano /etc/apache2/sites-available/agiledisk.com.conf
+
+sudo systemctl reload apache2
+
+sudo ufw status
+
+- Get an SSL certificate
+
+sudo certbot --apache
+
+Response:
+
+Congratulations! You have successfully enabled https://agiledisk.com and
+https://www.agiledisk.com
+
+You should test your configuration at:
+https://www.ssllabs.com/ssltest/analyze.html?d=agiledisk.com
+https://www.ssllabs.com/ssltest/analyze.html?d=www.agiledisk.com
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+IMPORTANT NOTES:
+ - Congratulations! Your certificate and chain have been saved at:
+   /etc/letsencrypt/live/agiledisk.com/fullchain.pem
+   Your key file has been saved at:
+   /etc/letsencrypt/live/agiledisk.com/privkey.pem
+   Your cert will expire on 2021-07-26. To obtain a new or tweaked
+   version of this certificate in the future, simply run certbot again
+   with the "certonly" option. To non-interactively renew *all* of
+   your certificates, run "certbot renew"
+ - Your account credentials have been saved in your Certbot
+   configuration directory at /etc/letsencrypt. You should make a
+   secure backup of this folder now. This configuration directory will
+   also contain certificates and private keys obtained by Certbot so
+   making regular backups of this folder is ideal.
+ - If you like Certbot, please consider supporting our work by:
+
+   Donating to ISRG / Let's Encrypt:   https://letsencrypt.org/donate
+   Donating to EFF:                    https://eff.org/donate-le
+
+   
+sudo systemctl status certbot.timer
+
+sudo certbot renew --dry-run
+
+
+8. Install MySQL, create WP_DB and a user.
+https://www.digitalocean.com/community/tutorials/how-to-install-linux-apache-mysql-php-lamp-stack-on-ubuntu-20-04
+
+sudo apt install mysql-server
+
+sudo mysql_secure_installation
+
+root_pass: Alfeios051182!
+
+sudo mysql
+
+CREATE DATABASE algo_db DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+
+
+CREATE USER 'algoTrader'@'%' IDENTIFIED WITH mysql_native_password BY 'queenAlgo2021!';
+
+GRANT ALL ON algo_db.* TO 'algoTrader'@'%';
+
+FLUSH PRIVILEGES;
+
+exit
+
+mysql -u algoTrader -p
+
+show databases;
+
+
+
+9. Installing PHP
+
+sudo apt update
+
+sudo apt install php libapache2-mod-php php-mysql
+
+sudo apt install php-curl php-gd php-mbstring php-xml php-xmlrpc php-soap php-intl php-zip
+
+sudo systemctl restart apache2
+
+php -v
+
+sudo nano /var/www/agiledisk.com/info.php
+
+<?php
+echo "<h1>Success!  The Agile Disk PHP server is working!</h1>
+		<h3> We are building something awesome for you!!! </h3>";
+?>
+
+https://agiledisk.com/info.php
+
+# sudo rm /var/www/agiledisk.com/info.php
+
+sudo nano  /etc/php/7.4/apache2/php.ini
+
+upload_max_filesize = 200M
+
+sudo service apache2 restart
+
+
+10. Install Miconda
+https://www.digitalocean.com/community/tutorials/how-to-install-the-anaconda-python-distribution-on-ubuntu-20-04
+https://medium.com/dunder-data/anaconda-is-bloated-set-up-a-lean-robust-data-science-environment-with-miniconda-and-conda-forge-b48e1ac11646#:~:text=The%20Miniconda%20distribution%20packages%20together,tenth%20the%20size%20of%20Anaconda.
+
+sudo wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+bash Miniconda3-latest-Linux-x86_64.sh
+conda list
+
+conda search "^python$"
+conda update conda
+
+11. Set Up a JupyterLab Environment
+https://www.digitalocean.com/community/tutorials/how-to-set-up-a-jupyterlab-environment-on-ubuntu-18-04
+
+conda activate base
+
+conda install -y jupyter
+conda install -y jupyterlab
+
+jupyter notebook --generate-config
+
+jupyter notebook password
+
+nano /home/kblancov/.jupyter/jupyter_notebook_config.json
+
+"argon2:$argon2id$v=19$m=10240,t=10,p=8$sx+t5Gkcfy8EYZjS1oVVKg$5PdPrSUWgxeXfLJFhWDU9A"
+
+sudo add-apt-repository ppa:certbot/certbot
+
+
+
+edit the JupyterLab configuration file at
+
+nano /home/kblancov/.jupyter/jupyter_notebook_config.py

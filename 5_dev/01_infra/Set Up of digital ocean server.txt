@@ -33,7 +33,7 @@ vm.swappiness=10
 vm.vfs_cache_pressure=50
 
 
-6. Create a new user and set a firewirewall and copy ssh
+6. Create a new user and set a firewall and copy ssh
 
 From: https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-18-04
 
