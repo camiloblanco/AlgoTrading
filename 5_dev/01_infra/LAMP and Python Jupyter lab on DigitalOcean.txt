@@ -288,7 +288,7 @@ upload_max_filesize = 200M
 sudo service apache2 restart
 
 
-10. Install Miconda
+10. Install Miconda and Data Science
 https://www.digitalocean.com/community/tutorials/how-to-install-the-anaconda-python-distribution-on-ubuntu-20-04
 https://medium.com/dunder-data/anaconda-is-bloated-set-up-a-lean-robust-data-science-environment-with-miniconda-and-conda-forge-b48e1ac11646#:~:text=The%20Miniconda%20distribution%20packages%20together,tenth%20the%20size%20of%20Anaconda.
 
@@ -297,7 +297,51 @@ bash Miniconda3-latest-Linux-x86_64.sh
 conda list
 
 conda search "^python$"
+
 conda update conda
+
+conda install -y jupyter
+
+conda install -y jupyterlab
+
+conda install -y numpy
+
+conda install -y pytables
+
+conda install -y pandas
+
+conda install -y scipy
+
+conda install -y  matplotlib
+
+conda install -y seaborn
+
+conda install -y quantdl
+
+conda install -y scikit-learn
+
+conda install -y openpyxl
+
+conda install -y xlrd xlwt
+
+conda install -y pyaml
+
+
+pip install --upgrade pip
+
+pip install q
+
+pip install plotly
+
+pip install cufflinks
+
+pip install tensorflow
+
+pip install keras
+
+pip install eikon
+
+pip install git+git://github.com/yhilpisch/tpqoa
 
 
 11. Set Up a JupyterLab Environment
@@ -306,8 +350,6 @@ https://www.digitalocean.com/community/tutorials/how-to-set-up-a-jupyterlab-envi
 
 conda activate base
 
-conda install -y jupyter
-conda install -y jupyterlab
 
 jupyter notebook --generate-config
 
