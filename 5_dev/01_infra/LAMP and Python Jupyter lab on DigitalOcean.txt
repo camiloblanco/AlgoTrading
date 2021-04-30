@@ -172,6 +172,8 @@ sudo apache2ctl configtest
 
 sudo systemctl restart apache2
 
+
+
 7.  Secure Apache with Let's Encrypt
 
 https://www.digitalocean.com/community/tutorials/how-to-secure-apache-with-let-s-encrypt-on-ubuntu-20-04
@@ -221,6 +223,11 @@ IMPORTANT NOTES:
 sudo systemctl status certbot.timer
 
 sudo certbot renew --dry-run
+
+-- Files stored at: /etc/letsencrypt/live/agiledisk.com
+
+sudo chown -R kblancov /etc/letsencrypt
+
 
 
 8. Install MySQL, create WP_DB and a user.
@@ -292,7 +299,9 @@ conda list
 conda search "^python$"
 conda update conda
 
+
 11. Set Up a JupyterLab Environment
+
 https://www.digitalocean.com/community/tutorials/how-to-set-up-a-jupyterlab-environment-on-ubuntu-18-04
 
 conda activate base
@@ -302,16 +311,85 @@ conda install -y jupyterlab
 
 jupyter notebook --generate-config
 
-jupyter notebook password
+jupyter lab password
 
-nano /home/kblancov/.jupyter/jupyter_notebook_config.json
-
-"argon2:$argon2id$v=19$m=10240,t=10,p=8$sx+t5Gkcfy8EYZjS1oVVKg$5PdPrSUWgxeXfLJFhWDU9A"
-
-sudo add-apt-repository ppa:certbot/certbot
+jupyter server password
 
 
+nano /home/kblancov/.jupyter/jupyter_server_config.json
 
-edit the JupyterLab configuration file at
+
+  "sha1:c1dcf60b5cce:c2726d8d75f27c82839cd20ebc2692c552f9f398"
+
+conda deactivate
 
 nano /home/kblancov/.jupyter/jupyter_notebook_config.py
+
+- Make these changes:
+
+...
+
+c.NotebookApp.certfile = '/etc/letsencrypt/live/agiledisk.com/fullchain.pem'
+
+c.NotebookApp.keyfile = '/etc/letsencrypt/live/agiledisk.com/privkey.pem'
+
+c.NotebookApp.ip = '*'
+
+c.NotebookApp.open_browser = False
+
+c.NotebookApp.password = 'sha1:c1dcf60b5cce:c2726d8d75f27c82839cd20ebc2692c552f9f398'
+
+c.NotebookApp.port = 9000
+
+sudo ufw allow 9000
+
+
+sudo chmod 750 -R /etc/letsencryp
+
+sudo chown kblancov:kblancov -R /etc/letsencrypt
+
+
+12. Running JupyterLab and Setting Up a systemd Service
+
+conda activate base
+
+jupyter lab
+
+
+--Create a service
+
+sudo nano /etc/systemd/system/jupyterlab.service
+
+-- Add this content:
+
+[Unit]
+Description=Jupyter Lab Server
+
+[Service]
+User=kblancov
+Group=kblancov
+Type=simple
+WorkingDirectory=/home/kblancov/
+ExecStart=/home/kblancov/miniconda3/bin/jupyter-lab
+StandardOutput=null
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+
+-- start the service:
+
+sudo systemctl daemon-reload
+
+sudo systemctl start jupyterlab
+
+sudo systemctl status jupyterlab
+
+-- To stop
+
+sudo systemctl stop jupyterlab
+
+Set to auto start on system start:
+
+sudo systemctl enable jupyterlab
