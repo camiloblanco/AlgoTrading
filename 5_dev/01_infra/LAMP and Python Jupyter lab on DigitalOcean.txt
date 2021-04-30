@@ -468,6 +468,12 @@ git init
 
 git status
 
+git add --all
+
+- change something
+
+git status
+
 git commit -m "First cloud commit"
 
 git remote -v
