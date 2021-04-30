@@ -345,6 +345,8 @@ pip install tensorflow
 
 pip install keras
 
+pip3 install SQLAlchemy
+
 pip install eikon
 
 pip install git+git://github.com/yhilpisch/tpqoa
@@ -457,9 +459,24 @@ nano ~/.gitconfig
 
 - Follow: https://webkul.com/blog/github-push-with-two-factor-authentication/
 
+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
+
 
 git clone  https://github.com/camiloblanco/AlgoTrading.git
 
-git remote add origin  https://github.com/camiloblanco/AlgoTrading.git
+git init
 
-git remote add origin  https://github.com/camiloblanco/AlgoTrading.git
+git status
+
+git add --all
+
+- change something
+
+git status
+
+git commit -m "First cloud commit"
+
+git remote -v
+
+git push origin master
+
