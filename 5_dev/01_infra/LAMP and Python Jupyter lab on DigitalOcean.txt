@@ -5,6 +5,12 @@
 - Select the best datacenter
 http://speedtest-tor1.digitalocean.com/
 
+- On the first line, enter ssh-rsa.
+- Make sure you add one space after ssh-rsa
+-When you copy/paste the key into the Key textbox it should preserve the \n characters (x0A). If you are using Notepad on Windows, you won't see these new lines until you copy the text to Github.
+
+
+
 - Use SSH key 
 https://www.digitalocean.com/docs/droplets/how-to/add-ssh-keys/create-with-putty/
 - Use strong password (paraphrase) to encript key
@@ -435,3 +441,25 @@ sudo systemctl stop jupyterlab
 Set to auto start on system start:
 
 sudo systemctl enable jupyterlab
+
+
+
+13. Install Git on Ubuntu 20.04
+
+git --version
+
+sudo apt update
+
+git config --global user.name "kblancov"
+git config --global user.email "mail@camiloblanco.com"
+
+nano ~/.gitconfig
+
+- Follow: https://webkul.com/blog/github-push-with-two-factor-authentication/
+
+
+git clone  https://github.com/camiloblanco/AlgoTrading.git
+
+git remote add origin  https://github.com/camiloblanco/AlgoTrading.git
+
+git remote add origin  https://github.com/camiloblanco/AlgoTrading.git
