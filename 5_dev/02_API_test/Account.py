@@ -30,7 +30,7 @@ class Account():
         return response.status_code, response.json()
 
     def account_instruments(self):
-        instruments = f"{self.Oanda_URL}/accounts/{self.Account_ID}/instruments"
+        instruments = f"{self.Oanda_URL}/accounts/{self.Account_ID}/instruments?instruments=SPX500_USD"
         print(instruments)
         response = self.session.get(instruments, params=None, headers=self.Header)
         return response.status_code, response.json()
@@ -41,7 +41,7 @@ class Account():
         return response.status_code, response.json()
 
     def account_patch(self,Patch):
-        Patch_data = json.dumps(self.order_data)
+        pass
 
 
 
@@ -50,6 +50,6 @@ class Account():
 if __name__ == '__main__':
     acc = Account("fcd13b16706c8b961be0641aebd0f143-285a7112c2a5ec5c8ecd2082de590867", "101-004-19105515-001", "https://api-fxpractice.oanda.com/v3",
                             {'Authorization': f'Bearer {"fcd13b16706c8b961be0641aebd0f143-285a7112c2a5ec5c8ecd2082de590867"}'})
-    print(acc.account_summary())
+    print(acc.account_instruments())
 
 
