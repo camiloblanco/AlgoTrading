@@ -7,6 +7,8 @@ class Oanda_Manager():
 
     def __init__(self):
         Account_details = pd.read_csv('Account_details.csv')
+        Account_details_cols = Account_details.columns.tolist()
+        print(Account_details_cols)
         Account_details['Account_Name'] = pd.Series(Account_details['Account_Name'], dtype="string")
         print(Account_details['Account_Name'])
         #Account_details.to_dict('records')
