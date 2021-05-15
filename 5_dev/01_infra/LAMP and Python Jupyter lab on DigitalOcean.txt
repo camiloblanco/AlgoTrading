@@ -332,12 +332,16 @@ conda install -y xlrd xlwt
 
 conda install -y pyaml
 
+conda install -y yarn
+
+
 
 pip install --upgrade pip
 
 pip install q
 
 pip install plotly
+
 
 pip install cufflinks
 
@@ -350,6 +354,42 @@ pip3 install SQLAlchemy
 pip install eikon
 
 pip install git+git://github.com/yhilpisch/tpqoa
+
+pip install jupyterlab-git
+
+- Some python libraries require NODE:
+
+sudo apt update
+
+sudo apt install nodejs
+
+nodejs -v
+
+sudo apt install npm
+
+- Get the las node stable node version
+
+sudo npm cache clean -f
+sudo npm install -g n
+sudo n stable
+
+
+- jupyter labextension install jupyterlab-plotly
+https://plotly.com/python/troubleshooting/
+
+https://github.com/plotly/plotly.py/issues/2223
+
+jupyter labextension list
+
+jupyter lab clean
+
+export NODE_OPTIONS=--max-old-space-size=4096
+
+jupyter lab build
+
+or ...
+
+jupyter lab build --dev-build=False --minimize=False
 
 
 11. Set Up a JupyterLab Environment
