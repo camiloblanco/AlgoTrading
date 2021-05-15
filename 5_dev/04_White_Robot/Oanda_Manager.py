@@ -15,8 +15,13 @@ class Oanda_Manager():
             'Authorization': f'Bearer {self.API_KEY}'
         }
 
-    def new_method(self):
-        pass
+    def get_account_instrument(self, instrument_type):
+        instrument_list = f"{self.Oanda_URL}/accounts/{self.Account_ID}/instruments?instruments={instrument_type}"
+        print(instrument_list)
+        df = pd.DataFrame.from_dict(instrument_list)
+        return df[['name', 'type', 'displayName', 'pipLocation', 'marginRate']]
+
+
 
 
 def get_account_instrument(self, instrument_type):
@@ -25,4 +30,4 @@ def get_account_instrument(self, instrument_type):
 
 if __name__ == "__main__":
     O_M = Oanda_Manager()
-    O_M.new_method()
+    O_M.get_account_instrument("SPX500_USD")
