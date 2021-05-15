@@ -42,13 +42,26 @@ class Instrument(Account):
     def fetch_candle_data(self, asset_name, count, granularity):
         candle_data_url = f"{self.Oanda_URL}/instruments/{asset_name}/candles"
         params = dict(count=count, granularity=granularity, price="MBA")
-        response = self.session.get(candle_data_url, params=params, headers=self.Header)
-        candle_dataframe = self.reformat_file(response.json())
+        candle_response = self.session.get(candle_data_url, params=params, headers=self.Header)
+        candle_dataframe = self.reformat_file(candle_response.json())
         return candle_dataframe
+
+    #For Forex Data
+    def fetch_order_book(self, asset_name):
+        order_data_url = f"{self.Oanda_URL}/instruments/{asset_name}/orderBook"
+        order_response = self.session.get(order_data_url, params = None, headers = self.Header)
+        return order_response.json()
+
+    #For Forex Data
+    def fetch_position_book(self, asset_name):
+        position_data_url = f"{self.Oanda_URL}/instruments/{asset_name}/positionBook"
+        position_response = self.session.get(position_data_url, params=None, headers=self.Header)
+        return position_response.json()
 
 
 
 if __name__ == "__main__":
     Instrument = Instrument("fcd13b16706c8b961be0641aebd0f143-285a7112c2a5ec5c8ecd2082de590867", "101-004-19105515-001", "https://api-fxpractice.oanda.com/v3",
                             {'Authorization': f'Bearer {"fcd13b16706c8b961be0641aebd0f143-285a7112c2a5ec5c8ecd2082de590867"}'})
-    print(Instrument.fetch_candle_data("SPX500_USD", 1000, "D"))
+
+

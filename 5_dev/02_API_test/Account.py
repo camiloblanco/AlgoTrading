@@ -3,6 +3,7 @@ import pandas as pd
 import util
 
 
+
 class Account():
 
     def __init__(self, API_KEY, Account_ID, Oanda_URL, Header): #initializes the class Onada_API and create the session method upon intialization
@@ -38,6 +39,10 @@ class Account():
         account_changes = f"{self.OANDA_URL}/accounts/{self.Account_ID}/changes?sinceTransactionID =" + Transaction_ID
         response = self.session.get(account_changes, params=None, headers=self.Header)
         return response.status_code, response.json()
+
+    def account_patch(self,Patch):
+        Patch_data = json.dumps(self.order_data)
+
 
 
 
