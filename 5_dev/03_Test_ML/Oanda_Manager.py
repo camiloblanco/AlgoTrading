@@ -90,6 +90,7 @@ class Oanda_Manager():
         candle_data_url = f"{self.Oanda_URL}/instruments/{asset_name}/candles"
         params = dict(price="MBA", granularity=granularity, **{'from' : from_date} , to=to_date)
         candle_response = self.session.get(candle_data_url, params=params, headers=self.Header)
+        candle_response
         candle_dataframe = self.format_candles(candle_response.json())
         return candle_dataframe
         
