@@ -59,15 +59,39 @@ class Oanda_Manager():
                 for oh in ohlc:
                     new_dict[f"{price}_{oh}"] = candle[price][oh]
             our_data.append(new_dict)
-        return pd.DataFrame.from_dict(our_data)
+        candle_data=pd.DataFrame.from_dict(our_data)
+        
+        # Get the datetime from Oanda date format
+        candle_data['time'] = pd.to_datetime(candle_data['time'], format='%Y-%m-%dT%H:%M:%S.%fZ')
+        candle_data=candle_data.set_index('time')
+        
+        # Cast prices from Oanda text response
+        candle_data ['volume'] = candle_data ['volume'].astype(float)
+        cols = candle_data.columns[candle_data.dtypes.eq('object')]
+        candle_data [cols] = candle_data [cols].astype(float)
+        
+        return candle_data
     
-    # Method that read the candle data from Oanda API for specific asset
-    def read_instrument_candles(self, asset_name, count, granularity):
+    # Get the candle data from Oanda API for specific asset by count
+    def get_candles_count(self, asset_name, granularity, count):
         candle_data_url = f"{self.Oanda_URL}/instruments/{asset_name}/candles"
-        params = dict(count=count, granularity=granularity, price="MBA")
+        params = dict(price="MBA", granularity=granularity, count=count)
         candle_response = self.session.get(candle_data_url, params=params, headers=self.Header)
         candle_dataframe = self.format_candles(candle_response.json())
-     
+        return candle_dataframe
+    
+    # Get the candle data from Oanda API for specific asset by dates
+    ## Scape from... https://stackoverflow.com/questions/54974442/escape-reserved-keywords-python
+    def get_candles_dates(self, asset_name, granularity, from_date, to_date ):
+        # Convert the datetime to Oanda date format
+        from_date=from_date.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+        to_date=to_date.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+        # Make the request
+        candle_data_url = f"{self.Oanda_URL}/instruments/{asset_name}/candles"
+        params = dict(price="MBA", granularity=granularity, **{'from' : from_date} , to=to_date)
+        candle_response = self.session.get(candle_data_url, params=params, headers=self.Header)
+        candle_response
+        candle_dataframe = self.format_candles(candle_response.json())
         return candle_dataframe
         
         
