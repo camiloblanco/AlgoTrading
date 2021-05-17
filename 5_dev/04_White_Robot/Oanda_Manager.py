@@ -5,15 +5,15 @@ import pandas as pd
 class Oanda_Manager():
     
     #Constructors
-        
-    def __init__(self, API_KEY, Account_ID, Oanda_URL, Header): #initializes the class Onada_API and create the session method upon intialization
+    def __init__(self, Account_details_file): #initializes the class Onada_API and create the session method upon intialization
+        account = pd.read_csv(Account_details_file)
         self.session = requests.Session()
-        self.API_KEY = API_KEY
-        self.Account_ID = Account_ID
-        self.Oanda_URL = Oanda_URL
-        self.Header = Header
+        self.API_KEY = account.iloc[0, 0]
+        self.Account_ID = account.iloc[0, 1]
+        self.Oanda_URL = account.iloc[0, 2]
+        self.Header = {'Authorization': f'Bearer {self.API_KEY}'}
         
-    #Methods to manage the account
+    # Methods to manage the account
 
     def account_list(self):
         account_url = f"{self.Oanda_URL}/accounts"
@@ -44,9 +44,9 @@ class Oanda_Manager():
     def account_patch(self,Patch):
         Patch_data = json.dumps(self.order_data)
         
-    #Methods to read and format instruments
+    # Methods to read and format instruments
     
-    #This method formats the candle data in a dataframe
+    # This method formats the candle data in a dataframe
     def format_candles(self,json_response):
         prices = ['mid', 'bid', 'ask']
         ohlc = ['o', 'h', 'l', 'c']
