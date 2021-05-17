@@ -35,7 +35,9 @@ class Instrument(Account):
 
     def get_instruments_list(self):
         instrument_list = self.get_instruments_data()
+        print(instrument_list)
         df = pd.DataFrame.from_dict(instrument_list)
+        print(df)
         return df[['name', 'type', 'displayName', 'pipLocation', 'marginRate']]
 
 
@@ -63,5 +65,6 @@ class Instrument(Account):
 if __name__ == "__main__":
     Instrument = Instrument("fcd13b16706c8b961be0641aebd0f143-285a7112c2a5ec5c8ecd2082de590867", "101-004-19105515-001", "https://api-fxpractice.oanda.com/v3",
                             {'Authorization': f'Bearer {"fcd13b16706c8b961be0641aebd0f143-285a7112c2a5ec5c8ecd2082de590867"}'})
+    print(Instrument.get_instruments_list())
 
 
