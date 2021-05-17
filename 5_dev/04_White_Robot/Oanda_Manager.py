@@ -5,7 +5,6 @@ import pandas as pd
 class Oanda_Manager():
     
     #Constructors
-        
     def __init__(self, API_KEY, Account_ID, Oanda_URL, Header): #initializes the class Onada_API and create the session method upon intialization
         self.session = requests.Session()
         self.API_KEY = API_KEY
@@ -13,7 +12,7 @@ class Oanda_Manager():
         self.Oanda_URL = Oanda_URL
         self.Header = Header
         
-    #Methods to manage the account
+    # Methods to manage the account
 
     def account_list(self):
         account_url = f"{self.Oanda_URL}/accounts"
@@ -44,9 +43,9 @@ class Oanda_Manager():
     def account_patch(self,Patch):
         Patch_data = json.dumps(self.order_data)
         
-    #Methods to read and format instruments
+    # Methods to read and format instruments
     
-    #This method formats the candle data in a dataframe
+    # This method formats the candle data in a dataframe
     def format_candles(self,json_response):
         prices = ['mid', 'bid', 'ask']
         ohlc = ['o', 'h', 'l', 'c']
