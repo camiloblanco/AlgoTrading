@@ -96,14 +96,11 @@ class Oanda_Manager():
 
     def get_all_candles_data(self, start_date, end_date):
         starting_idx = 0
+        SPX_500_full_data= pd.DataFrame()
         while(starting_idx < len(start_date)):
+            pass
+
             
-
-
-
-
-
-
 
 
 
