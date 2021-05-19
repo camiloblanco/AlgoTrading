@@ -98,11 +98,6 @@ class Oanda_Manager():
         candle_dataframe = self.format_candles(candle_response.json())
         return candle_dataframe
 
-    def account_summary(self):
-            account_summary = f"{self.Oanda_URL}/accounts/{self.Account_ID}/summary"
-            response = self.session.get(account_summary, params=None, headers=self.Header)
-            return response.status_code, response.json()
-
 
     def get_all_candles_data(self, asset_name, granularity, start_date, end_date):
         starting_idx = 0
@@ -113,10 +108,6 @@ class Oanda_Manager():
             starting_idx += 1
         return Merged_candle_Dataframe
 
-    def account_changes(self, Transaction_ID):
-        account_changes = f"{self.OANDA_URL}/accounts/{self.Account_ID}/changes sinceTransactionID =" + Transaction_ID
-        response = self.session.get(account_changes, params=None, headers=self.Header)
-        return response.status_code, response.json()
 
 if __name__ == '__main__':
     O_M = Oanda_Manager('Account_details.csv')
