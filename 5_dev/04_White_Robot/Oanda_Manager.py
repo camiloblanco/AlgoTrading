@@ -2,8 +2,20 @@ import requests
 import pandas as pd
 from dateutil.relativedelta import relativedelta
 from datetime import date
+
 # Class to manage the CRUD for OANDA API
 class Oanda_Manager():
+    
+    #Constructors
+    def __init__(self, Account_details_file): #initializes the class Onada_API and create the session method upon intialization
+        account = pd.read_csv(Account_details_file)
+        self.session = requests.Session()
+        self.API_KEY = account.iloc[0, 0]
+        self.Account_ID = account.iloc[0, 1]
+        self.Oanda_URL = account.iloc[0, 2]
+        self.Header = {'Authorization': f'Bearer {self.API_KEY}'}
+        
+    # Methods to manage the account
 
     # Constructors
     def __init__(self, Account_details_file):  # initializes the class Onada_API and create the session method upon intialization
@@ -101,9 +113,12 @@ class Oanda_Manager():
             candle_data = self.get_candles_dates(asset_name,granularity,start_date[starting_idx], end_date[starting_idx])
             Merged_candle_Dataframe = Merged_candle_Dataframe.append(candle_data)
             starting_idx += 1
-
         return Merged_candle_Dataframe
 
+    def account_changes(self, Transaction_ID):
+        account_changes = f"{self.OANDA_URL}/accounts/{self.Account_ID}/changes sinceTransactionID =" + Transaction_ID
+        response = self.session.get(account_changes, params=None, headers=self.Header)
+        return response.status_code, response.json()
 
 if __name__ == '__main__':
     O_M = Oanda_Manager('Account_details.csv')
@@ -113,5 +128,4 @@ if __name__ == '__main__':
     to_date.append(date.today().strftime("%Y-%m-%d"))
     Merged_candle_data = O_M.get_all_candles_data("SPX500_USD", "H4", from_date, to_date)
     Merged_candle_data.to_csv('Merged_candle_data.csv')
-
 
