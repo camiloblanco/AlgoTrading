@@ -6,15 +6,7 @@ from datetime import date
 # Class to manage the CRUD for OANDA API
 class Oanda_Manager():
     
-    #Constructors
-    def __init__(self, Account_details_file): #initializes the class Onada_API and create the session method upon intialization
-        account = pd.read_csv(Account_details_file)
-        self.session = requests.Session()
-        self.API_KEY = account.iloc[0, 0]
-        self.Account_ID = account.iloc[0, 1]
-        self.Oanda_URL = account.iloc[0, 2]
-        self.Header = {'Authorization': f'Bearer {self.API_KEY}'}
-        
+
     # Methods to manage the account
 
     # Constructors
@@ -106,6 +98,12 @@ class Oanda_Manager():
         candle_dataframe = self.format_candles(candle_response.json())
         return candle_dataframe
 
+    def account_summary(self):
+            account_summary = f"{self.Oanda_URL}/accounts/{self.Account_ID}/summary"
+            response = self.session.get(account_summary, params=None, headers=self.Header)
+            return response.status_code, response.json()
+
+
     def get_all_candles_data(self, asset_name, granularity, start_date, end_date):
         starting_idx = 0
         Merged_candle_Dataframe = pd.DataFrame()
@@ -128,4 +126,5 @@ if __name__ == '__main__':
     to_date.append(date.today().strftime("%Y-%m-%d"))
     Merged_candle_data = O_M.get_all_candles_data("SPX500_USD", "H4", from_date, to_date)
     Merged_candle_data.to_csv('Merged_candle_data.csv')
+
 
