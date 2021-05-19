@@ -108,8 +108,11 @@ class Oanda_Manager():
             candle_data = self.get_candles_dates(asset_name,granularity,start_date[starting_idx], end_date[starting_idx])
             Merged_candle_Dataframe = Merged_candle_Dataframe.append(candle_data)
             starting_idx += 1
-            print(starting_idx)
         return Merged_candle_Dataframe
+
+    #Creates HDF Tables for  data of a certain asset class
+    
+
 
 
 if __name__ == '__main__':
