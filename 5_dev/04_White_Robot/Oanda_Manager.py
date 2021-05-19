@@ -85,8 +85,8 @@ class Oanda_Manager():
     ## Scape from... https://stackoverflow.com/questions/54974442/escape-reserved-keywords-python
     def get_candles_dates(self, asset_name, granularity, from_date, to_date):
         # Convert the datetime to Oanda date format
-        from_date = from_date.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-        to_date = to_date.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+        #from_date = from_date.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+        #to_date = to_date.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
         # Make the request
         candle_data_url = f"{self.Oanda_URL}/instruments/{asset_name}/candles"
         params = dict(price="MBA", granularity=granularity, **{'from': from_date}, to=to_date)
@@ -94,23 +94,24 @@ class Oanda_Manager():
         candle_dataframe = self.format_candles(candle_response.json())
         return candle_dataframe
 
-    def get_all_candles_data(self, start_date, end_date):
+    def get_all_candles_data(self, asset_name, granularity, start_date, end_date):
         starting_idx = 0
-        SPX_500_full_data= pd.DataFrame()
-        while(starting_idx < len(start_date)):
-            pass
+        Merged_candle_Dataframe = pd.DataFrame()
+        while starting_idx < len(start_date):
+            candle_data = self.get_candles_dates(asset_name,granularity,start_date[starting_idx], end_date[starting_idx])
+            Merged_candle_Dataframe = Merged_candle_Dataframe.append(candle_data)
+            starting_idx += 1
 
-            
-
-
+        return Merged_candle_Dataframe
 
 
 if __name__ == '__main__':
     O_M = Oanda_Manager('Account_details.csv')
     starting_date = pd.to_datetime('2003-01-01')
-    from_date = pd.date_range(starting_date, date.today(), freq='AS').strftime("%Y-%m-%d").tolist()
-    to_date = pd.date_range(starting_date, date.today(), freq='A').strftime("%Y-%m-%d").tolist()
+    from_date = pd.date_range(starting_date, date.today(), freq='AS').strftime("%Y-%m-%dT%H:%M:%S.%fZ").tolist()
+    to_date = pd.date_range(starting_date, date.today(), freq='A').strftime("%Y-%m-%dT%H:%M:%S.%fZ").tolist()
     to_date.append(date.today().strftime("%Y-%m-%d"))
-    O_M.merge_candles_dates(from_date, to_date)
+    Merged_candle_data = O_M.get_all_candles_data("SPX500_USD", "H4", from_date, to_date)
+    Merged_candle_data.to_csv('Merged_candle_data.csv')
 
 
