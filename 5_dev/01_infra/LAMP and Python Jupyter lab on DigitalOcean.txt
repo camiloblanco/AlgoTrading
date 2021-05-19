@@ -332,12 +332,16 @@ conda install -y xlrd xlwt
 
 conda install -y pyaml
 
+conda install -y yarn
+
+
 
 pip install --upgrade pip
 
 pip install q
 
 pip install plotly
+
 
 pip install cufflinks
 
@@ -350,6 +354,42 @@ pip3 install SQLAlchemy
 pip install eikon
 
 pip install git+git://github.com/yhilpisch/tpqoa
+
+pip install jupyterlab-git
+
+- Some python libraries require NODE:
+
+sudo apt update
+
+sudo apt install nodejs
+
+nodejs -v
+
+sudo apt install npm
+
+- Get the las node stable node version
+
+sudo npm cache clean -f
+sudo npm install -g n
+sudo n stable
+
+
+- jupyter labextension install jupyterlab-plotly
+https://plotly.com/python/troubleshooting/
+
+https://github.com/plotly/plotly.py/issues/2223
+
+jupyter labextension list
+
+jupyter lab clean
+
+export NODE_OPTIONS=--max-old-space-size=4096
+
+jupyter lab build
+
+or ...
+
+jupyter lab build --dev-build=False --minimize=False
 
 
 11. Set Up a JupyterLab Environment
@@ -459,10 +499,35 @@ nano ~/.gitconfig
 
 - Follow: https://webkul.com/blog/github-push-with-two-factor-authentication/
 
+Token from Github:
+
 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
 
+- Configure the SHH
 
-git clone  https://github.com/camiloblanco/AlgoTrading.git
+https://www.freecodecamp.org/news/git-ssh-how-to/
+
+-Response:
+-- Your identification has been saved in GitHubKbKey
+-- Your public key has been saved in GitHubKbKey.pub
+-- The key fingerprint is:
+
+-- SHA256:/tf4g8beOzUUmTMk7WkYAYv0UAOVFVaMPO+VIOdq7FY mail@camiloblanco.com
+
+eval "$(ssh-agent -s)"
+
+ssh-add ~/.ssh/GitHubKbKey
+
+cat ~/.ssh/GitHubKbKey.pub
+
+
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCipZ2FsLT0324SdnUygSIzOYLzNjbBnUWdgHJ9rlJljhI1cpOp6qyqDBGkCaqZBCn1Hw2amT/v76SfMejGsGAxjjCCZfacJZxEKI+9NBYhfRrZd7d1F006/87LqranlRd1lIn+swvn8hZj38lpXBIoGqnlJj1e2vuEqx/1M7pe+190qzxY8KCuQimEriuvY2rEWITrAGmp//F9hRM4qjSoEB8a3xapS4grCbLHRd7jGG+XA5faZwRFQdBJIgwJnB2kBJLLoThrw7yVfeNBYc74zmduf6XRRkqEbGG8cyrlMSCJXadV7qjhBm5+iTeivUHkqbZ2ASgHwWN9026/sdjkwBfvqxnfvSMwBE2ttZvlA/hJmZ7g3YtHmG0mnvt8ThMj9TY437Qvw2U+XP5Jj2FgSB6/bOyOTmcCfeBpn9N+6oxFPza1Z7zrqzN/Y7O53aDJJIRBsNWRmWiC8eKF7DoAgRnedr4dqWVxghrNTQ//SHZUnB9WatCJX8zZy8GbPcLJKwlA4r55Xvxr5SYAXA/zvasXlNn+a28L6Zd4pNwX6+QfifIj83KeTqIS616N1kzoukdr8k53WXaUW1EnogpkYuLfFaX7/XTupOpIbfz8mqgQv8cQ5BlXtzq6FkDwkt2KW+PsDb6cXkphBvjBzF+AAigkAYzMLaLKCwLMcTaD/w== mail@camiloblanco.com
+
+- Test the ssh conection
+
+ssh -T git@github.com
+
+git clone  git@github.com:camiloblanco/AlgoTrading.git
 
 git init
 
@@ -478,5 +543,9 @@ git commit -m "First cloud commit"
 
 git remote -v
 
-git push origin master
+git push
+
+--- End of scripting
+
+Keep on Rolling...
 
