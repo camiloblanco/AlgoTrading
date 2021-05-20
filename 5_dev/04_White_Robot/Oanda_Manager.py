@@ -2,7 +2,7 @@ import requests
 import pandas as pd
 from dateutil.relativedelta import relativedelta
 from datetime import date
-import tables
+import tables as tb
 
 # Class to manage the CRUD for OANDA API
 class Oanda_Manager():
@@ -114,17 +114,10 @@ class Oanda_Manager():
 
     #Creates HDF Tables for  data of a certain asset class
     def create_HDF_table(self, Merged_candle_Dataframe):
-        Merged_candle_Dataframe.to_hdf('Merged candle Data.h5', 'data', format = 'table')
-        data_copy = pd.read_hdf('Merged candle Data.h5', 'data')
-        return Merged_candle_Dataframe
+       return Merged_candle_Dataframe.to_hdf('Merge_candle_Dataframe.h5', 'data', format = 'table')
 
 
 
-if __name__ == '__main__':
-    O_M = Oanda_Manager('Account_details.csv')
-    starting_date = pd.to_datetime('2003-01-01')
-    to_date = date.today()
-    Merged_candle_data = O_M.get_all_candles_data("SPX500_USD", "H4", starting_date, to_date)
-    Merged_candle_data.to_csv('Merged_candle_data.csv')
+
 
 
