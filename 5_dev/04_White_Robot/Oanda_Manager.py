@@ -2,6 +2,7 @@ import requests
 import pandas as pd
 from dateutil.relativedelta import relativedelta
 from datetime import date
+import tables
 
 # Class to manage the CRUD for OANDA API
 class Oanda_Manager():
@@ -108,10 +109,14 @@ class Oanda_Manager():
             candle_data = self.get_candles_dates(asset_name,granularity,start_date[starting_idx], end_date[starting_idx])
             Merged_candle_Dataframe = Merged_candle_Dataframe.append(candle_data)
             starting_idx += 1
+        self.create_HDF_table(Merged_candle_Dataframe)
         return Merged_candle_Dataframe
 
     #Creates HDF Tables for  data of a certain asset class
-    
+    def create_HDF_table(self, Merged_candle_Dataframe):
+        Merged_candle_Dataframe.to_hdf('Merged candle Data.h5', 'data', format = 'table')
+        data_copy = pd.read_hdf('Merged candle Data.h5', 'data')
+        return Merged_candle_Dataframe
 
 
 
