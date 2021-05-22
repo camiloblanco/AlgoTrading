@@ -3,8 +3,13 @@ import pandas as pd
 from dateutil.relativedelta import relativedelta
 from datetime import date
 import tables as tb
+from tables import *
+from Candle_Data_types import Candle_Data_Types
+
+
 
 # Class to manage the CRUD for OANDA API
+
 class Oanda_Manager():
 
     # Methods to manage the account
@@ -114,8 +119,28 @@ class Oanda_Manager():
 
     #Creates HDF Tables for  data of a certain asset class
     def create_HDF_table(self, Merged_candle_Dataframe):
-       return Merged_candle_Dataframe.to_hdf('Merge_candle_Dataframe.h5', 'data', format = 'table')
+        Candle_h5_file = open_file("Candle_h5_file.h5", mode="w", title="Asset Table")
+        group = Candle_h5_file.create_group("/", 'Candle', 'Candle_Data')
+        table = Candle_h5_file.create_table(group, 'readout', Candle_Data_Types, "Readout")
+        Merged_candle_data = table.row
+        Candle_Time = Merged_candle_Dataframe.index.to_list()
+        [date_obj.strftime('%Y-%m-%dT%H:%M:%S.%fZ') for date_obj in Candle_Time]
+        Merged_candle_Dataframe = Merged_candle_Dataframe.reset_index()
+        for idx in range(len(Merged_candle_Dataframe)):
+            Merged_candle_data['time'] = Candle_Time[idx]
+            Merged_candle_data['volume'] = Merged_candle_Dataframe['volume'].loc[idx]
 
+
+
+
+
+
+
+if __name__ == '__main__':
+    O_M=Oanda_Manager('Account_details.csv')
+    from_date = pd.to_datetime('1-1-2003')
+    to_date = date.today()
+    O_M.get_all_candles_data('SPX500_USD', "H4", from_date, to_date)
 
 
 
