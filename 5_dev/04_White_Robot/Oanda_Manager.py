@@ -145,8 +145,6 @@ class Oanda_Manager():
         Candle_Table.flush()
         Candle_H5_File.close()
 
-
-
 if __name__ == '__main__':
     O_M = Oanda_Manager('Account_details.csv')
     from_date = pd.to_datetime('1-1-2003')
