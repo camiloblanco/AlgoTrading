@@ -18,12 +18,6 @@ class Signal_Gen():
         time = [x['time'] for x in self.table.iterrows()]
         time = [x.decode('utf-8') for x in time]
         self.Time_Points = [datetime.strptime(x, '%Y-%m-%d %H:%M:%S') for x in time]
-        self.mid_open_points = [x['mid_o'] for x in self.table.iterrows()]
-        self.mid_open_points = pd.DataFrame(self.mid_open_points)
-        self.mid_high_points = [x['mid_h'] for x in self.table.iterrows()]
-        self.mid_high_points = pd.DataFrame(self.mid_high_points)
-        self.mid_low_points = [x['mid_l'] for x in self.table.iterrows()]
-        self.mid_low_points = pd.DataFrame(self.mid_low_points)
         self.mid_close_points = [x['mid_c'] for x in self.table.iterrows()]
         self.mid_close_points = pd.DataFrame(self.mid_close_points)
         self.Candle_h5_file.close()
@@ -33,6 +27,8 @@ class Signal_Gen():
         SMA_Data_14 = self.mid_close_points.rolling(window=rolling_window_1).mean()
         SMA_Data_21 = self.mid_close_points.rolling(window=rolling_window_2).mean()
         SMA_Data_50 = self.mid_close_points.rolling(window=rolling_window_3).mean()
+        
+
 
 
 
