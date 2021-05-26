@@ -113,12 +113,13 @@ class Oanda_Manager():
                                                  end_date[starting_idx])
             Merged_candle_Dataframe = Merged_candle_Dataframe.append(candle_data)
             starting_idx += 1
-        self.create_HDF_table(Merged_candle_Dataframe)
+        #self.create_HDF_table(Merged_candle_Dataframe)
         return Merged_candle_Dataframe
 
     # Creates HDF Tables for  data of a certain asset class
-    def create_HDF_table(self, Merged_candle_Dataframe):
-        Candle_H5_File = tb.open_file('Candle_h5_file.h5', mode='w', title='Candle_PyTable')
+    def create_HDF_table(self, Merged_candle_Dataframe, h5_file_name):
+        
+        Candle_H5_File = tb.open_file(h5_file_name, mode='w', title='Candle_PyTable')
         Candle_group = Candle_H5_File.create_group('/', 'candledata', 'Candle Date')
         Candle_Table = Candle_H5_File.create_table(Candle_group, 'candletable', Asset_Table_Description, 'Candle Pytable')
         Candle_row = Candle_Table.row
