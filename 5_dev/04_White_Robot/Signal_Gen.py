@@ -6,7 +6,6 @@ from datetime import date
 import tables as tb
 from tables import *
 import plotly.graph_objects as go
-import petl as etl
 import matplotlib as plt
 
 
@@ -23,14 +22,16 @@ class Signal_Gen():
         self.Candle_h5_file.close()
 
 
-    def Simple_moving_average(self, rolling_window_1,rolling_window_2, rolling_window_3):
-        SMA_Data_14 = self.mid_close_points.rolling(window=rolling_window_1).mean()
-        SMA_Data_21 = self.mid_close_points.rolling(window=rolling_window_2).mean()
-        SMA_Data_50 = self.mid_close_points.rolling(window=rolling_window_3).mean()
+    def Simple_moving_average(self, rolling_window):
+        SMA_Data = self.mid_close_points.rolling(window=rolling_window).mean()
+        return SMA_Data
+
         
-
-
-
+    #def Simple_moving_average(self, rolling_window_1,rolling_window_2, rolling_window_3):
+     #   SMA_Data_14 = self.mid_close_points.rolling(window=rolling_window_1).mean()
+      #  SMA_Data_21 = self.mid_close_points.rolling(window=rolling_window_2).mean()
+       # SMA_Data_50 = self.mid_close_points.rolling(window=rolling_window_3).mean()
+        
 
 if __name__ == '__main__':
     Candle_h5_file = open_file('Candle_h5_file.h5', "a")
