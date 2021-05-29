@@ -116,6 +116,12 @@ class Oanda_Manager():
 
         #self.create_HDF_table(Merged_candle_Dataframe, "Merged_Candle_Data_H5")
         return Merged_candle_Dataframe
+    
+    # Saves a CSV file for  data of a certain asset class
+    def save_CSV_file(self, pandas_Dataframe, csv_file_name):
+        pandas_Dataframe.to_csv(csv_file_name)
+    
+    
 
     # Creates HDF Tables for  data of a certain asset class
     def create_HDF_table(self, Merged_candle_Dataframe, h5_file_name):
