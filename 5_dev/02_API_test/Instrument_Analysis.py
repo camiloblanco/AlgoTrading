@@ -22,6 +22,7 @@ class Instrument_Analysis():
         mid_low = candle_data['mid_l']
         mid_close = candle_data['mid_c']
         Time_14, SMA_Data_14 = self.Simple_moving_average(rolling_window,  asset_name, count, granularity)
+        print(type(Time_14))
         Time_21, SMA_Data_20 = self.Simple_moving_average(20,  asset_name, count, granularity)
         Time_50, SMA_Data_40 = self.Simple_moving_average(40,  asset_name, count, granularity)
         fig = go.Figure(data=[go.Candlestick(x=Time_14,
