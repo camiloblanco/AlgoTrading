@@ -1,5 +1,0 @@
-https://docs.sqlalchemy.org/en/13/core/engines.html
-https://www.youtube.com/watch?v=l3qfjfyGztY
-https://www.tutorialspoint.com/sqlalchemy/sqlalchemy_core_using_textual_sql.htm
-https://overiq.com/sqlalchemy-101/defining-schema-in-sqlalchemy-core/
-http://apmonitor.com/che263/index.php/Main/PythonOptimization
