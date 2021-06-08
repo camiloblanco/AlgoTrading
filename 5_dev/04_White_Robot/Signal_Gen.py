@@ -1,15 +1,6 @@
-import requests
 import numpy as np
 import pandas as pd
 from scipy.stats import linregress
-from dateutil.relativedelta import relativedelta
-from datetime import datetime
-from datetime import date
-import tables as tb
-from tables import *
-import plotly.graph_objects as go
-import matplotlib.pyplot as plt
-import plotly.express as px
 
 
 class Signal_Gen():
