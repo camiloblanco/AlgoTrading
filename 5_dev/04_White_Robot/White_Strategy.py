@@ -51,7 +51,7 @@ class White_Strategy():
                     self.Asset_signals.at[index, 'Short_Signal'] = short_signal
                 else:
                     continue
-        return self.Asset_signals['time', 'mid_c', 'State', 'Long_Signal', 'Short_Signal']
+        return self.Asset_signals[['time', 'mid_c', 'State', 'Long_Signal', 'Short_Signal']]
 
     # Creates the Short State of the SNP 500 index
     def moving_avg_14_21_40_sell(self):
@@ -103,3 +103,9 @@ class White_Strategy():
         Buy_Sell_Signals['mid_c'] = self.Asset_signals['mid_c']
         Buy_Sell_Signals['Buy'] = Buy_Signal
         return Buy_Sell_Signals
+
+if __name__=='__main__':
+    fileName = "SPX500_H4_SIGNALS.CSV"
+    White_Strat = White_Strategy(fileName)
+    Buy_Signals = White_Strat.moving_avg_14_21_40_buy()
+    print(Buy_Signals)
