@@ -2,6 +2,7 @@ import requests
 import pandas as pd
 from dateutil.relativedelta import relativedelta
 from datetime import date
+from datetime import timedelta
 import tables as tb
 from tables import *
 from Asset_Table import Asset_Table_Description
@@ -14,7 +15,8 @@ class Oanda_Manager():
     # Methods to manage the account
 
     # Constructors
-    def __init__(self, Account_details_file):  # initializes the class Onada_API and create the session method upon intialization
+    def __init__(self,
+                 Account_details_file):  # initializes the class Onada_API and create the session method upon intialization
         account = pd.read_csv(Account_details_file)
         self.session = requests.Session()
         self.API_KEY = account.iloc[0, 0]
@@ -105,7 +107,7 @@ class Oanda_Manager():
     def get_all_candles_data(self, asset_name, granularity, starting_date, end_date):
         start_date = pd.date_range(starting_date, date.today(), freq='AS').tolist()
         end_date = pd.date_range(starting_date, date.today(), freq='A').tolist()
-        end_date.append(date.today())
+        end_date.append(date.today() - timedelta(days = 1))
         starting_idx = 0
         Merged_candle_Dataframe = pd.DataFrame()
         while starting_idx < len(start_date):
@@ -113,23 +115,22 @@ class Oanda_Manager():
                                                  end_date[starting_idx])
             Merged_candle_Dataframe = Merged_candle_Dataframe.append(candle_data)
             starting_idx += 1
+            #print(starting_idx)
 
-        #self.create_HDF_table(Merged_candle_Dataframe, "Merged_Candle_Data_H5")
+        # self.create_HDF_table(Merged_candle_Dataframe, "Merged_Candle_Data_H5")
         return Merged_candle_Dataframe
-    
+
     # Saves a CSV file for  data of a certain asset class
     def save_CSV_file(self, pandas_Dataframe, csv_file_name):
         pandas_Dataframe.to_csv(csv_file_name)
-    
-    
 
     # Creates HDF Tables for  data of a certain asset class
     def create_HDF_table(self, Merged_candle_Dataframe, h5_file_name):
 
-        
         Merged_Candle_Data_H5 = tb.open_file(h5_file_name, mode='w', title='Candle_PyTable')
         Candle_group = Merged_Candle_Data_H5.create_group('/', 'candledata', 'Candle Date')
-        Candle_Table = Merged_Candle_Data_H5.create_table(Candle_group, 'candletable', Asset_Table_Description, 'Candle Pytable')
+        Candle_Table = Merged_Candle_Data_H5.create_table(Candle_group, 'candletable', Asset_Table_Description,
+                                                          'Candle Pytable')
         Candle_row = Candle_Table.row
         Candle_Time = Merged_candle_Dataframe.index.to_list()
         [date_obj.strftime('%Y-%m-%dT%H:%M:%S.%fZ') for date_obj in Candle_Time]
@@ -153,6 +154,7 @@ class Oanda_Manager():
 
         Candle_Table.flush()
         Merged_Candle_Data_H5.close()
+
 
 if __name__ == '__main__':
     O_M = Oanda_Manager('Account_details.csv')
