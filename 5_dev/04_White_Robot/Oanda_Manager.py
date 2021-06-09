@@ -115,7 +115,7 @@ class Oanda_Manager():
                                                  end_date[starting_idx])
             Merged_candle_Dataframe = Merged_candle_Dataframe.append(candle_data)
             starting_idx += 1
-            print(starting_idx)
+            #print(starting_idx)
 
         # self.create_HDF_table(Merged_candle_Dataframe, "Merged_Candle_Data_H5")
         return Merged_candle_Dataframe
