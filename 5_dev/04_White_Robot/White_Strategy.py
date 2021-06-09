@@ -3,103 +3,82 @@ import pandas as pd
 from scipy.stats import linregress
 
 
-
-
 class White_Strategy():
+    
+     # Reads a CSV timeseries and strores in self.series using the time colum as index
+    def __init__(self, csv_file_name):
+        self.series = pd.read_csv(csv_file_name)
+        #The next line crashes becuase we need and integer index... learn how to interate over time series DF
+        #self.series = self.series.set_index('time')
+        self.series['state'] = np.nan
+        self.series['long_signal'] = np.nan
+        self.series['short_signal'] = np.nan
 
-    def __init__(self, csv_filename):
-        self.Asset_signals = pd.read_csv(csv_filename)
-        self.Asset_signals['State'] = np.nan
-        self.Asset_signals['Long_Signal'] = np.nan
-        self.Asset_signals['Short_Signal'] = np.nan
+    # Generates long or short signal depending on the state
+    def wr_state_analyzer(self, state):
 
-    def simple_state_analyzer(self, state):
-
-        if state == 1.5 or state == 1 or state == -1.5:
-            long_signal = 0
-            short_signal = 0
-        if state == 2.0 or state == 2.5:
+        if state == 3 or state == 4:
             long_signal = 1
             short_signal = 0
-        if state == -2.0 or state == -2.5:
+        elif state == 6 or state == 7:
             long_signal = 0
             short_signal = -1
+        else:
+            long_signal = 0
+            short_signal = 0
+        
         return long_signal, short_signal
+    
 
-    # Creates the Long State of the SNP 500 index
-    def moving_avg_14_21_40(self):
+    # State macine implementing the white robot strategy without slope
+    def simple_white_strat(self):
+        
         state = 1
-        for index in range(1, len(self.Asset_signals)):
-            curr_SMA_14 = self.Asset_signals['SMA_14'].loc[index]
-            curr_SMA_21 = self.Asset_signals['SMA_21'].loc[index]
-            curr_SMA_40 = self.Asset_signals['SMA_40'].loc[index]
-            previous_SMA_14 = self.Asset_signals['SMA_14'].iloc[index-1]
-            previous_SMA_21 = self.Asset_signals['SMA_21'].iloc[index-1]
-            previous_SMA_40 = self.Asset_signals['SMA_40'].iloc[index-1]
+        long_list =[0]
+        short_list=[0]
+        
+        for index in range(1, len(self.series)):
+            
+            curr_SMA_14 = self.series['SMA_14'].loc[index]
+            curr_SMA_21 = self.series['SMA_21'].loc[index]
+            curr_SMA_40 = self.series['SMA_40'].loc[index]
+            previous_SMA_14 = self.series['SMA_14'].iloc[index-1]
+            previous_SMA_21 = self.series['SMA_21'].iloc[index-1]
+            previous_SMA_40 = self.series['SMA_40'].iloc[index-1]
+            
             if state == 1:
                 if (previous_SMA_14 < previous_SMA_21) and (curr_SMA_14 > curr_SMA_21):
-                    state = 1.5
-                    long, short = self.simple_state_analyzer(state)
-                    self.Asset_signals['Long_Signal'].loc[index] = long
-                    self.Asset_signals['Short_Signal'].loc[index] = short
+                    state = 2
                 elif (previous_SMA_14 > previous_SMA_21) and (curr_SMA_14 < curr_SMA_21):
-                    state = -1.5
-                    long, short = self.simple_state_analyzer(state)
-                    self.Asset_signals['Long_Signal'].loc[index] = long
-                    self.Asset_signals['Short_Signal'].loc[index] = short
-                else:
-                    continue
-            elif state == 1.5:
+                    state = 5
+            elif state == 2:
                 if (previous_SMA_14 < previous_SMA_40) and (curr_SMA_14 > curr_SMA_40):
-                    state = 2.0
-                    long, short = self.simple_state_analyzer(state)
-                    self.Asset_signals['Long_Signal'].loc[index] = long
-                    self.Asset_signals['Short_Signal'].loc[index] = short
-                else:
-                    continue
-            elif state == 2.0:
+                    state = 3
+            elif state == 3:
                 if (previous_SMA_14 > previous_SMA_21) and (curr_SMA_14 < curr_SMA_21):
-                    state = 2.5
-                    long, short = self.simple_state_analyzer(state)
-                    self.Asset_signals['Long_Signal'].loc[index] = long
-                    self.Asset_signals['Short_Signal'].loc[index] = short
-                else:
-                    continue
-            elif state == 2.5:
+                    state = 4
+            elif state == 4:
                 if (previous_SMA_14 > previous_SMA_40) and (curr_SMA_14 < curr_SMA_40):
                     state = 1
-                    long, short = self.simple_state_analyzer(state)
-                    self.Asset_signals['Long_Signal'].loc[index] = long
-                    self.Asset_signals['Short_Signal'].loc[index] = short
-                else:
-                    continue
-            elif state == -1.5:
+            elif state == 5:
                 if(previous_SMA_14 > previous_SMA_40) and (curr_SMA_14 < curr_SMA_40):
-                    state = -2.0
-                    long, short = self.simple_state_analyzer(state)
-                    self.Asset_signals['Long_Signal'].loc[index] = long
-                    self.Asset_signals['Short_Signal'].loc[index] = short
-                else:
-                    continue
-            elif state == -2.0:
+                    state = 6
+            elif state == 6:
                 if(previous_SMA_14 < previous_SMA_21) and (curr_SMA_14 > curr_SMA_21):
-                    state = -2.5
-                    long, short = self.simple_state_analyzer(state)
-                    self.Asset_signals['Long_Signal'].loc[index] = long
-                    self.Asset_signals['Short_Signal'].loc[index] = short
-                else:
-                    continue
-            elif state == -2.5:
+                    state = 7
+            elif state == 7:
                 if(previous_SMA_14 < previous_SMA_40) and (curr_SMA_14 > curr_SMA_40):
                     state = 1
-                    long, short = self.simple_state_analyzer(state)
-                    self.Asset_signals['Long_Signal'].loc[index] = long
-                    self.Asset_signals['Short_Signal'].loc[index] = short
-                else:
-                    continue
-        return self.Asset_signals[['time', 'mid_c', 'Long_Signal', 'Short_Signal']]
+
+            self.series['state'].loc[index] = state
+            self.series['long_signal'].loc[index], self.series['short_signal'].loc[index] = self.wr_state_analyzer(state)
+        
+        return self.series
 
 
+    # Saves a CSV file for  data of a certain asset class
+    def save_CSV_file(self, pandas_Dataframe, csv_file_name):
+        pandas_Dataframe.to_csv(csv_file_name)
 
 
 
