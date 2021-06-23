@@ -16,6 +16,7 @@ class Market_Sim:
         self.series['Short_CFDs_Value'] = np.nan
         self.series['Current Portfolio Value'] = np.nan
         self.series['Last Trade Profit'] = np.nan
+        self.series['Index Trade Profit'] = np.nan
         self.series['Buy'] = 'N/A'
         self.series['Sell'] = 'N/A'
 
@@ -87,12 +88,10 @@ class Market_Sim:
             no_of_short_trades += 1
         return self.series['Sell'].loc[index], no_of_short_trades
 
+
     def simulate(self):
-        end_cash = 0
         number_of_long_trades = 0
         number_of_short_trades = 0
-        Total_Index_Return = 0
-        Total_Strategy_Return = 0
         self.series['long_signal'].loc[0] = 0
         self.series['short_signal'].loc[0] = 0
         self.series['CFD Units'].loc[0] = 0
@@ -122,11 +121,22 @@ class Market_Sim:
             self.series['Sell'].loc[index], number_of_short_trades = self.get_Sell_Signal(index, number_of_short_trades)
             if index % 1000 == 0:
                 print(index)
-        return self.series, number_of_long_trades, number_of_short_trades
+        self.series['Index Returns'] = self.series.mid_c.pct_change(periods=1)
+        Total_Strategy_Return = self.parameter[0] - self.series['Current Portfolio Value'].loc[len(self.series)-1]
+        Total_Strategy_Return = Total_Strategy_Return / self.parameter[0]
+        #Index_Strategy_Return = self.series['mid_c'].loc[len(self.series)-1] - self.series['mid_c'].loc[1]
+        #Index_Strategy_Return = Index_Strategy_Return / self.series['mid_c'].loc[1]
+        end_cash = self.series['Cash'].loc[len(self.series)-1]
+        return self.series, self.parameter, end_cash, number_of_long_trades, number_of_short_trades, Total_Strategy_Return
+
+    def csv_outputs(self):
+        self.series, self.parameter, end_cash, number_of_long_trades, number_of_short_trades, Total_Strategy_Return = self.simulate()
+        header = ['time', 'mid_c', 'Current Portfolio Value', 'Last Trade Profit','Index Returns']
+        return self.series.to_csv('Portfolio_Simulation.csv', columns=header)
+
 
 
 if __name__ == "__main__":
     order_book = pd.read_csv("WR_ORDER_BOOK.CSV")
     MS = Market_Sim(order_book, 10000, '09/04/1995', '09/05/1995')
-    CSV_file, no_of_long_trades, no_of_short_trades = MS.simulate()
-    CSV_file.to_csv('Market_Sim.csv')
+    MS.csv_outputs()
