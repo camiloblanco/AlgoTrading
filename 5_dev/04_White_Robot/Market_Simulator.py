@@ -124,13 +124,13 @@ class Market_Sim:
         self.series['Index Returns'] = self.series.mid_c.pct_change(periods=1)
         Total_Strategy_Return = self.parameter[0] - self.series['Current Portfolio Value'].loc[len(self.series)-1]
         Total_Strategy_Return = Total_Strategy_Return / self.parameter[0]
-        #Index_Strategy_Return = self.series['mid_c'].loc[len(self.series)-1] - self.series['mid_c'].loc[1]
-        #Index_Strategy_Return = Index_Strategy_Return / self.series['mid_c'].loc[1]
+        Index_Strategy_Return = self.series['mid_c'].loc[len(self.series)-1] - self.series['mid_c'].loc[1]
+        Index_Strategy_Return = Index_Strategy_Return / self.series['mid_c'].loc[1]
         end_cash = self.series['Cash'].loc[len(self.series)-1]
-        return self.series, self.parameter, end_cash, number_of_long_trades, number_of_short_trades, Total_Strategy_Return
+        return self.series, self.parameter, end_cash, number_of_long_trades, number_of_short_trades, Total_Strategy_Return, Index_Strategy_Return
 
     def csv_outputs(self):
-        self.series, self.parameter, end_cash, number_of_long_trades, number_of_short_trades, Total_Strategy_Return = self.simulate()
+        self.series, self.parameter, end_cash, number_of_long_trades, number_of_short_trades, Total_Strategy_Return, Index_Strategy_Return = self.simulate()
         header = ['time', 'mid_c', 'Current Portfolio Value', 'Last Trade Profit','Index Returns']
         return self.series.to_csv('Portfolio_Simulation.csv', columns=header)
 
