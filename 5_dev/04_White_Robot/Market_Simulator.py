@@ -17,15 +17,14 @@ class Market_Sim:
         self.series['Current Portfolio Value'] = np.nan
         self.series['Last Trade Profit'] = np.nan
         self.series['Index Trade Profit'] = np.nan
-        self.series['Buy'] = 'N/A'
-        self.series['Sell'] = 'N/A'
+        self.series['Position'] = 'N/A'
 
     def get_cash(self, index):
         if (self.series['CFD Units'].loc[index - 1] == 0) and (self.series['CFD Units'].loc[index] > 0):
             self.series['Cash'].loc[index] = 0
         elif (self.series['Last Trade Investment'].loc[index] == 0) and (
                 self.series['Last Trade Investment'].loc[index - 1] > 0):
-            self.series['Cash'].loc[index] = self.series['Current Portfolio Value'].loc[index-1]
+            self.series['Cash'].loc[index] = self.series['Current Portfolio Value'].loc[index - 1]
         else:
             self.series['Cash'].loc[index] = self.series['Cash'].loc[index - 1]
         return self.series['Cash'].loc[index]
@@ -44,13 +43,15 @@ class Market_Sim:
         if (self.series['long_signal'].loc[index] == 0) and (self.series['short_signal'].loc[index] == 0):
             self.series['Last Trade Investment'].loc[index] = 0
         elif (self.series['CFD Units'].loc[index - 1] == 0) and (self.series['CFD Units'].loc[index] > 0):
-            self.series['Last Trade Investment'].loc[index] = self.series['CFD Units'].loc[index] * self.series['mid_c'].loc[index]
+            self.series['Last Trade Investment'].loc[index] = self.series['CFD Units'].loc[index] * \
+                                                              self.series['mid_c'].loc[index]
         else:
             self.series['Last Trade Investment'].loc[index] = self.series['Last Trade Investment'].loc[index - 1]
         return self.series['Last Trade Investment'].loc[index]
 
     def get_Long_CFDs_Value(self, index):
-        self.series['Long_CFDs_Value'].loc[index] = self.series['CFD Units'].loc[index] * self.series['mid_c'].loc[index] * self.series['long_signal'].loc[index]
+        self.series['Long_CFDs_Value'].loc[index] = self.series['CFD Units'].loc[index] * self.series['mid_c'].loc[
+            index] * self.series['long_signal'].loc[index]
         return self.series['Long_CFDs_Value'].loc[index]
 
     def get_Short_CFDs_Value(self, index):
@@ -74,20 +75,16 @@ class Market_Sim:
                                                           self.series['Last Trade Investment'].loc[index]
         return self.series['Last Trade Profit'].loc[index]
 
-    def get_Buy_Signal(self, index, no_of_long_trades):
+    def get_position(self, index, no_of_long_trades, no_of_short_trades):
         if ((self.series['long_signal'].loc[index - 1] == 0) and (self.series['long_signal'].loc[index] == 1)) or \
                 ((self.series['short_signal'].loc[index - 1] == 0) and (self.series['short_signal'].loc[index] == 1)):
-            self.series['Buy'].loc[index] = 'Buy'
+            self.series['Position'].loc[index] = 1
             no_of_long_trades += 1
-        return self.series['Buy'].loc[index], no_of_long_trades
-
-    def get_Sell_Signal(self, index, no_of_short_trades):
-        if ((self.series['long_signal'].loc[index - 1] == 1) and (self.series['long_signal'].loc[index] == 0)) or \
+        elif ((self.series['long_signal'].loc[index - 1] == 1) and (self.series['long_signal'].loc[index] == 0)) or \
                 ((self.series['short_signal'].loc[index - 1] == 1) and (self.series['short_signal'].loc[index] == 0)):
-            self.series['Sell'].loc[index] = 'Sell'
+            self.series['Position'].loc[index] = -1
             no_of_short_trades += 1
-        return self.series['Sell'].loc[index], no_of_short_trades
-
+        return self.series['Position'].loc[index], no_of_long_trades, no_of_short_trades
 
     def simulate(self):
         number_of_long_trades = 0
@@ -117,23 +114,21 @@ class Market_Sim:
             self.series['Short_CFDs_Value'].loc[index] = self.get_Short_CFDs_Value(index)
             self.series['Current Portfolio Value'].loc[index] = self.get_Current_Portfolio_Value(index)
             self.series['Last Trade Profit'].loc[index] = self.get_Last_Trade_Profit(index)
-            self.series['Buy'].loc[index], number_of_long_trades = self.get_Buy_Signal(index, number_of_long_trades)
-            self.series['Sell'].loc[index], number_of_short_trades = self.get_Sell_Signal(index, number_of_short_trades)
+            self.series['Position'].loc[index], number_of_long_trades, number_of_short_trades = self.get_position(index, number_of_long_trades, number_of_short_trades)
             if index % 1000 == 0:
                 print(index)
         self.series['Index Returns'] = self.series.mid_c.pct_change(periods=1)
-        Total_Strategy_Return = self.parameter[0] - self.series['Current Portfolio Value'].loc[len(self.series)-1]
+        Total_Strategy_Return = self.parameter[0] - self.series['Current Portfolio Value'].loc[len(self.series) - 1]
         Total_Strategy_Return = Total_Strategy_Return / self.parameter[0]
-        Index_Strategy_Return = self.series['mid_c'].loc[len(self.series)-1] - self.series['mid_c'].loc[1]
+        Index_Strategy_Return = self.series['mid_c'].loc[len(self.series) - 1] - self.series['mid_c'].loc[1]
         Index_Strategy_Return = Index_Strategy_Return / self.series['mid_c'].loc[1]
-        end_cash = self.series['Cash'].loc[len(self.series)-1]
+        end_cash = self.series['Cash'].loc[len(self.series) - 1]
         return self.series, self.parameter, end_cash, number_of_long_trades, number_of_short_trades, Total_Strategy_Return, Index_Strategy_Return
 
     def csv_outputs(self):
         self.series, self.parameter, end_cash, number_of_long_trades, number_of_short_trades, Total_Strategy_Return, Index_Strategy_Return = self.simulate()
-        header = ['time', 'mid_c', 'Current Portfolio Value', 'Last Trade Profit','Index Returns']
+        header = ['time', 'mid_c', 'Position', 'Cash', 'CFD Units', 'Last Trade Investment', 'Long_CFDs_Value', 'Short_CFDs_Value', 'Index Returns']
         return self.series.to_csv('Portfolio_Simulation.csv', columns=header)
-
 
 
 if __name__ == "__main__":
