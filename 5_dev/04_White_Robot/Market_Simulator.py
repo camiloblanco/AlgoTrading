@@ -62,7 +62,7 @@ class Market_Sim:
         return self.series['Short_CFDs_Value'].loc[index]
 
     def Intrinsic_Value(self, index):
-        self.series['Intrinsic Value'].loc[index] = 
+        if self.series['Long_CFDs_Value'] == 0:
 
     def get_Current_Portfolio_Value(self, index):
         self.series['Current Portfolio Value'].loc[index] = self.series['Cash'].loc[index] + \
