@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-from scipy.stats import linregress
 
 
 class White_Strategy():
@@ -86,6 +85,6 @@ class White_Strategy():
 if __name__=='__main__':
     fileName = "SPX500_H4_SIGNALS.CSV"
     White_Strat = White_Strategy(fileName)
-    Asset_Signals = White_Strat.moving_avg_14_21_40()
+    Asset_Signals = White_Strat.simple_white()
     Asset_Signals.to_csv('Asset_Signals.csv')
 
