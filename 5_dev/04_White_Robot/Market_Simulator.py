@@ -14,6 +14,7 @@ class Market_Sim:
         self.series['Last Trade Investment'] = np.nan
         self.series['Long_CFDs_Value'] = np.nan
         self.series['Short_CFDs_Value'] = np.nan
+        self.series['Intrinsic_Value'] = np.nan
         self.series['Current Portfolio Value'] = np.nan
         self.series['Last Trade Profit'] = np.nan
         self.series['Index Trade Profit'] = np.nan
@@ -60,6 +61,8 @@ class Market_Sim:
                 self.series['mid_c'].loc[index]) * self.series['short_signal'].loc[index]
         return self.series['Short_CFDs_Value'].loc[index]
 
+    def Intrinsic_Value(self, index):
+        
     def get_Current_Portfolio_Value(self, index):
         self.series['Current Portfolio Value'].loc[index] = self.series['Cash'].loc[index] + \
                                                             self.series['Long_CFDs_Value'].loc[index] + \
@@ -112,6 +115,7 @@ class Market_Sim:
             self.series['Cash'].loc[index] = self.get_cash(index)
             self.series['Long_CFDs_Value'].loc[index] = self.get_Long_CFDs_Value(index)
             self.series['Short_CFDs_Value'].loc[index] = self.get_Short_CFDs_Value(index)
+            self.series['In']
             self.series['Current Portfolio Value'].loc[index] = self.get_Current_Portfolio_Value(index)
             self.series['Last Trade Profit'].loc[index] = self.get_Last_Trade_Profit(index)
             self.series['Position'].loc[index], number_of_long_trades, number_of_short_trades = self.get_position(index, number_of_long_trades, number_of_short_trades)
