@@ -132,7 +132,7 @@ class Market_Sim:
 
     def csv_outputs(self):
         self.series, self.parameter, end_cash, number_of_long_trades, number_of_short_trades, Total_Strategy_Return = self.simulate()
-        header = ['time', 'mid_c', 'Signals', 'CFD Units','Portfolio Value', 'Intrinsic_Value', 'Index Returns']
+        header = ['time', 'mid_c', 'Signals', 'CFD Units', 'Intrinsic_Value', 'Portfolio Value', 'Last Trade Profit']
         return self.series.to_csv('Portfolio_Simulation.csv', columns=header)
 
 
