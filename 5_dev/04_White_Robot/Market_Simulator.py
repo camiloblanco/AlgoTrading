@@ -15,17 +15,18 @@ class Market_Sim:
         self.series['Long_CFDs_Value'] = np.nan
         self.series['Short_CFDs_Value'] = np.nan
         self.series['Intrinsic_Value'] = np.nan
-        self.series['Current Portfolio Value'] = np.nan
+        self.series['Portfolio Value'] = np.nan
         self.series['Last Trade Profit'] = np.nan
         self.series['Index Trade Profit'] = np.nan
-        self.series['Position'] = 'N/A'
+        self.series['Position'] = 0
+        self.series['Signals'] = self.series['long_signal'] + self.series['short_signal']
 
     def get_cash(self, index):
         if (self.series['CFD Units'].loc[index - 1] == 0) and (self.series['CFD Units'].loc[index] > 0):
             self.series['Cash'].loc[index] = 0
         elif (self.series['Last Trade Investment'].loc[index] == 0) and (
                 self.series['Last Trade Investment'].loc[index - 1] > 0):
-            self.series['Cash'].loc[index] = self.series['Current Portfolio Value'].loc[index - 1]
+            self.series['Cash'].loc[index] = self.series['Portfolio Value'].loc[index - 1]
         else:
             self.series['Cash'].loc[index] = self.series['Cash'].loc[index - 1]
         return self.series['Cash'].loc[index]
@@ -61,20 +62,21 @@ class Market_Sim:
                 self.series['mid_c'].loc[index]) * self.series['short_signal'].loc[index]
         return self.series['Short_CFDs_Value'].loc[index]
 
-    def Intrinsic_Value(self, index):
-        self.series['Intrinsic Value'].loc[index] = 
+    def get_Intrinsic_Value(self, index):
+        self.series['Intrinsic_Value'].loc[index] = self.series['Long_CFDs_Value'].loc[index] + self.series['Short_CFDs_Value'].loc[index]
+        return self.series['Intrinsic_Value'].loc[index]
 
-    def get_Current_Portfolio_Value(self, index):
-        self.series['Current Portfolio Value'].loc[index] = self.series['Cash'].loc[index] + \
+    def get_Portfolio_Value(self, index):
+        self.series['Portfolio Value'].loc[index] = self.series['Cash'].loc[index] + \
                                                             self.series['Long_CFDs_Value'].loc[index] + \
                                                             self.series['Short_CFDs_Value'].loc[index]
-        return self.series['Current Portfolio Value'].loc[index]
+        return self.series['Portfolio Value'].loc[index]
 
     def get_Last_Trade_Profit(self, index):
         if self.series['Last Trade Investment'].loc[index] == 0:
             self.series['Last Trade Profit'].loc[index] = 0
         else:
-            self.series['Last Trade Profit'].loc[index] = (self.series['Current Portfolio Value'].loc[index] -
+            self.series['Last Trade Profit'].loc[index] = (self.series['Portfolio Value'].loc[index] -
                                                            self.series['Last Trade Investment'].loc[index]) / \
                                                           self.series['Last Trade Investment'].loc[index]
         return self.series['Last Trade Profit'].loc[index]
@@ -102,12 +104,12 @@ class Market_Sim:
         self.series['Short_CFDs_Value'].loc[0] = -(2 * self.series['Last Trade Investment'].loc[0] -
                                                    self.series['CFD Units'].loc[0] * self.series['mid_c'].loc[0]) * \
                                                  self.series['short_signal'].loc[0]
-        self.series['Current Portfolio Value'].loc[0] = self.series['Cash'].loc[0] + self.series['Long_CFDs_Value'].loc[
+        self.series['Portfolio Value'].loc[0] = self.series['Cash'].loc[0] + self.series['Long_CFDs_Value'].loc[
             0] + self.series['Short_CFDs_Value'].loc[0]
         if self.series['Last Trade Investment'].loc[0] == 0:
             self.series['Last Trade Profit'].loc[0] = 0
         else:
-            self.series['Last Trade Profit'].loc[0] = (self.series['Current Portfolio Value'].loc[0] -
+            self.series['Last Trade Profit'].loc[0] = (self.series['Portfolio Value'].loc[0] -
                                                        self.series['Last Trade Investment'].loc[0]) / \
                                                       self.series['Last Trade Investment'].loc[0]
         for index in range(1, len(self.series)):
@@ -116,23 +118,21 @@ class Market_Sim:
             self.series['Cash'].loc[index] = self.get_cash(index)
             self.series['Long_CFDs_Value'].loc[index] = self.get_Long_CFDs_Value(index)
             self.series['Short_CFDs_Value'].loc[index] = self.get_Short_CFDs_Value(index)
-            self.series['In']
-            self.series['Current Portfolio Value'].loc[index] = self.get_Current_Portfolio_Value(index)
+            self.series['Intrinsic_Value'].loc[index] = self.get_Intrinsic_Value(index)
+            self.series['Portfolio Value'].loc[index] = self.get_Portfolio_Value(index)
             self.series['Last Trade Profit'].loc[index] = self.get_Last_Trade_Profit(index)
             self.series['Position'].loc[index], number_of_long_trades, number_of_short_trades = self.get_position(index, number_of_long_trades, number_of_short_trades)
             if index % 1000 == 0:
                 print(index)
         self.series['Index Returns'] = self.series.mid_c.pct_change(periods=1)
-        Total_Strategy_Return = self.parameter[0] - self.series['Current Portfolio Value'].loc[len(self.series) - 1]
+        Total_Strategy_Return = self.parameter[0] - self.series['Portfolio Value'].loc[len(self.series) - 1]
         Total_Strategy_Return = Total_Strategy_Return / self.parameter[0]
-        Index_Strategy_Return = self.series['mid_c'].loc[len(self.series) - 1] - self.series['mid_c'].loc[1]
-        Index_Strategy_Return = Index_Strategy_Return / self.series['mid_c'].loc[1]
         end_cash = self.series['Cash'].loc[len(self.series) - 1]
-        return self.series, self.parameter, end_cash, number_of_long_trades, number_of_short_trades, Total_Strategy_Return, Index_Strategy_Return
+        return self.series, self.parameter, end_cash, number_of_long_trades, number_of_short_trades, Total_Strategy_Return
 
     def csv_outputs(self):
-        self.series, self.parameter, end_cash, number_of_long_trades, number_of_short_trades, Total_Strategy_Return, Index_Strategy_Return = self.simulate()
-        header = ['time', 'mid_c', 'Position', 'Cash', 'CFD Units', 'Last Trade Investment', 'Long_CFDs_Value', 'Short_CFDs_Value', 'Index Returns']
+        self.series, self.parameter, end_cash, number_of_long_trades, number_of_short_trades, Total_Strategy_Return = self.simulate()
+        header = ['time', 'mid_c', 'Signals', 'CFD Units', 'Intrinsic_Value', 'Portfolio Value', 'Last Trade Profit']
         return self.series.to_csv('Portfolio_Simulation.csv', columns=header)
 
 
