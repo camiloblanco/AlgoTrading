@@ -120,8 +120,12 @@ class Oanda_Manager():
         #Business_days = candle_data.index.map(isBusinessDay)
         #Business_days_candle_data = candle_data[Business_days]
         return Merged_candle_Dataframe
-
+    
     # Saves a CSV file for  data of a certain asset class
-    def save_CSV_file(self, pandas_Dataframe, csv_file_name):
-        pandas_Dataframe.to_csv(csv_file_name)
+    def save_CSV_file(self, candle_data, pandas_Dataframe, csv_file_name):
+        pandas_Dataframe = pandas_Dataframe.to_frame().merge(candle_data['volume'], on=candle_data.index, how='left')
+        pandas_Dataframe = pandas_Dataframe.rename(columns={'key_0': 'time'})
+        pandas_Dataframe = pandas_Dataframe.set_index('time')
+        print(pandas_Dataframe)
+        #return pandas_Dataframe.to_csv(csv_file_name)
 
