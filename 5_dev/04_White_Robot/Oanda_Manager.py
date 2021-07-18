@@ -116,9 +116,9 @@ class Oanda_Manager():
             Merged_candle_Dataframe = Merged_candle_Dataframe.append(candle_data)
             starting_idx += 1
             #print(starting_idx)
-        isBusinessDay = BDay().onOffset
-        Business_days = candle_data.index.map(isBusinessDay)
-        Business_days_candle_data = candle_data[Business_days]
+        #isBusinessDay = BDay().onOffset
+        #Business_days = candle_data.index.map(isBusinessDay)
+        #Business_days_candle_data = candle_data[Business_days]
         return Merged_candle_Dataframe
 
     # Saves a CSV file for  data of a certain asset class
