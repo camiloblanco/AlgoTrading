@@ -6,7 +6,7 @@ from datetime import timedelta
 #import tables as tb
 #from tables import *
 #from Asset_Table import Asset_Table_Description
-
+from pandas.tseries.offsets import BDay
 
 # Class to manage the CRUD for OANDA API
 
@@ -116,41 +116,12 @@ class Oanda_Manager():
             Merged_candle_Dataframe = Merged_candle_Dataframe.append(candle_data)
             starting_idx += 1
             #print(starting_idx)
-
-        # self.create_HDF_table(Merged_candle_Dataframe, "Merged_Candle_Data_H5")
+        isBusinessDay = BDay().onOffset
+        Business_days = candle_data.index.map(isBusinessDay)
+        Business_days_candle_data = candle_data[Business_days]
         return Merged_candle_Dataframe
 
     # Saves a CSV file for  data of a certain asset class
     def save_CSV_file(self, pandas_Dataframe, csv_file_name):
         pandas_Dataframe.to_csv(csv_file_name)
 
-    # Creates HDF Tables for  data of a certain asset class
-    #def create_HDF_table(self, Merged_candle_Dataframe, h5_file_name):
-
-      #  Merged_Candle_Data_H5 = tb.open_file(h5_file_name, mode='w', title='Candle_PyTable')
-      #  Candle_group = Merged_Candle_Data_H5.create_group('/', 'candledata', 'Candle Date')
-      #  Candle_Table = Merged_Candle_Data_H5.create_table(Candle_group, 'candletable', Asset_Table_Description,
-                                                          #'Candle Pytable')
-      #  Candle_row = Candle_Table.row
-      #  Candle_Time = Merged_candle_Dataframe.index.to_list()
-      #  [date_obj.strftime('%Y-%m-%dT%H:%M:%S.%fZ') for date_obj in Candle_Time]
-      #  Merged_candle_Dataframe = Merged_candle_Dataframe.reset_index()
-      #  for idx in range(len(Merged_candle_Dataframe)):
-       #     Candle_row['time'] = Candle_Time[idx]
-       #    Candle_row['volume'] = Merged_candle_Dataframe['volume'].loc[idx]
-       #     Candle_row['mid_o'] = Merged_candle_Dataframe['mid_o'].loc[idx]
-       #     Candle_row['mid_h'] = Merged_candle_Dataframe['mid_h'].loc[idx]
-       #     Candle_row['mid_l'] = Merged_candle_Dataframe['mid_l'].loc[idx]
-       #     Candle_row['mid_c'] = Merged_candle_Dataframe['mid_c'].loc[idx]
-       #     Candle_row['bid_o'] = Merged_candle_Dataframe['bid_o'].loc[idx]
-       #     Candle_row['bid_h'] = Merged_candle_Dataframe['bid_h'].loc[idx]
-       #     Candle_row['bid_l'] = Merged_candle_Dataframe['bid_l'].loc[idx]
-       #     Candle_row['bid_c'] = Merged_candle_Dataframe['bid_c'].loc[idx]
-       #     Candle_row['ask_o'] = Merged_candle_Dataframe['ask_o'].loc[idx]
-       #     Candle_row['ask_h'] = Merged_candle_Dataframe['ask_h'].loc[idx]
-       #     Candle_row['ask_l'] = Merged_candle_Dataframe['ask_l'].loc[idx]
-       #     Candle_row['ask_c'] = Merged_candle_Dataframe['ask_c'].loc[idx]
-       #     Candle_row.append()
-
-        # Candle_Table.flush()
-        # Merged_Candle_Data_H5.close()
