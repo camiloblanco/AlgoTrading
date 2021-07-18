@@ -126,6 +126,5 @@ class Oanda_Manager():
         pandas_Dataframe = pandas_Dataframe.to_frame().merge(candle_data['volume'], on=candle_data.index, how='left')
         pandas_Dataframe = pandas_Dataframe.rename(columns={'key_0': 'time'})
         pandas_Dataframe = pandas_Dataframe.set_index('time')
-        print(pandas_Dataframe)
-        #return pandas_Dataframe.to_csv(csv_file_name)
+        return pandas_Dataframe.to_csv(csv_file_name)
 
