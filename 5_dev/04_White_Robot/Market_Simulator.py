@@ -3,12 +3,10 @@ import pandas as pd
 
 
 class Market_Sim:
-    def __init__(self, csv_filename, initial_cash, start_date, end_date):
-        self.parameter = [initial_cash, start_date, end_date]
+    def __init__(self, csv_filename, initial_cash):
+        self.parameter = [initial_cash]
         self.series = csv_filename
         self.initial_cash = initial_cash
-        self.start_date = start_date
-        self.end_date = end_date
         self.series['Cash'] = np.nan
         self.series['CFD Units'] = np.nan
         self.series['Last Trade Investment'] = np.nan
@@ -83,12 +81,12 @@ class Market_Sim:
         return self.series['Last Trade Profit'].loc[index]
 
     def get_position(self, index, no_of_long_trades, no_of_short_trades):
-        if ((self.series['long_signal'].loc[index - 1] == 0) and (self.series['long_signal'].loc[index] == 1)) or \
-                ((self.series['short_signal'].loc[index - 1] == 0) and (self.series['short_signal'].loc[index] == 1)):
+        if ((self.series['long_signal'].loc[index - 1] == 0) and (self.series['long_signal'].loc[index] != 0)) or \
+                ((self.series['short_signal'].loc[index - 1] == 0) and (self.series['short_signal'].loc[index] != 0)):
             self.series['Position'].loc[index] = 1
             no_of_long_trades += 1
-        elif ((self.series['long_signal'].loc[index - 1] == 1) and (self.series['long_signal'].loc[index] == 0)) or \
-                ((self.series['short_signal'].loc[index - 1] == 1) and (self.series['short_signal'].loc[index] == 0)):
+        elif ((self.series['long_signal'].loc[index - 1] != 0) and (self.series['long_signal'].loc[index] == 0)) or \
+                ((self.series['short_signal'].loc[index - 1] != 0) and (self.series['short_signal'].loc[index] == 0)):
             self.series['Position'].loc[index] = -1
             no_of_short_trades += 1
         return self.series['Position'].loc[index], no_of_long_trades, no_of_short_trades
@@ -131,15 +129,16 @@ class Market_Sim:
         Total_Strategy_Return = (self.series['Portfolio Value'].loc[len(self.series) - 1] - self.parameter[0]) / self.parameter[0]
         Total_Index_Return = (self.series['Index Returns'].loc[len(self.series) - 1] - self.parameter[0]) / self.parameter[0]
         end_cash = self.series['Cash'].loc[len(self.series) - 1]
+        #end_Portfolio_Value = self.series['']
         return self.series, self.parameter, end_cash, number_of_long_trades, number_of_short_trades, Total_Strategy_Return, Total_Index_Return
 
-    def Portfolio_Simulation_csv(self):
+    def Portfolio_Simulation_csv_outputs(self):
         self.series = self.simulate()
         header = ['time', 'mid_c', 'Signals', 'CFD Units', 'Intrinsic_Value', 'Portfolio Value', 'Last Trade Profit']
         return self.series.to_csv('Portfolio_Simulation.csv', columns=header)
 
-    def Simulation_KPI_csv(self):
-        end_cash, number_of_long_trades, number_of_short_trades, Total_Strategy_Return, Total_Index_Return = self.simulate()
+    def Simulation_KPI_csv_outputs(self):
+        self.series, self.parameter, end_cash, number_of_long_trades, number_of_short_trades, Total_Strategy_Return, Total_Index_Return = self.simulate()
         KPI_dataframe = pd.DataFrame({'Simulation Parameters': [self.parameter],
                                       'End Cash': [end_cash],
                                       'Number of Long Trades': [number_of_long_trades],
@@ -151,5 +150,5 @@ class Market_Sim:
 
 if __name__ == "__main__":
     order_book = pd.read_csv("WR_ORDER_BOOK.CSV")
-    MS = Market_Sim(order_book, 10000, '09/04/1995', '09/05/1995')
-    MS.Simulation_KPI_csv()
+    MS = Market_Sim(order_book, 10000)
+    MS.Simulation_KPI_csv_outputs()
