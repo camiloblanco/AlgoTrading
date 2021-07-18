@@ -30,7 +30,7 @@ class Order(Account):
 if __name__ == "__main__":
 
     Order = Order("fcd13b16706c8b961be0641aebd0f143-285a7112c2a5ec5c8ecd2082de590867", "101-004-19105515-001", "https://api-fxpractice.oanda.com/v3", {"Content-Type": "application/json",'Authorization': f'Bearer {"fcd13b16706c8b961be0641aebd0f143-285a7112c2a5ec5c8ecd2082de590867"}'}
-                  ,data = {"order": {"units": 10, "instrument": "EUR_CAD", "timeInForce": "FOK", "type": "MARKET", "positionFill": "DEFAULT"}})
+                  ,data={"order": {"units": 10, "instrument": "EUR_CAD", "timeInForce": "FOK", "type": "MARKET", "positionFill": "DEFAULT"}})
     Order.create_Account_order()
     print(Order.get_unique_asset_order())
 
