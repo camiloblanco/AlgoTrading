@@ -127,24 +127,25 @@ class Market_Sim:
                 print(index)
         self.series['Index Returns'] = self.series.mid_c.pct_change(periods=1)
         Total_Strategy_Return = (self.series['Portfolio Value'].loc[len(self.series) - 1] - self.parameter[0]) / self.parameter[0]
-        Total_Index_Return = (self.series['Index Returns'].loc[len(self.series) - 1] - self.parameter[0]) / self.parameter[0]
+        Total_Index_Return = (self.series['mid_c'].loc[len(self.series) - 1] - self.series['mid_c'].loc[0]) / self.series['mid_c'].loc[0]
         end_cash = self.series['Cash'].loc[len(self.series) - 1]
-        #end_Portfolio_Value = self.series['']
-        return self.series, self.parameter, end_cash, number_of_long_trades, number_of_short_trades, Total_Strategy_Return, Total_Index_Return
+        end_Portfolio_Value = self.series['Portfolio Value'].loc[len(self.series) - 1]
+        return self.series, self.parameter, end_cash, number_of_long_trades, number_of_short_trades, Total_Strategy_Return, Total_Index_Return, end_Portfolio_Value
 
     def Portfolio_Simulation_csv_outputs(self):
-        self.series = self.simulate()
+        self.series, self.parameter, end_cash, number_of_long_trades, number_of_short_trades, Total_Strategy_Return, Total_Index_Return, end_ = self.simulate()
         header = ['time', 'mid_c', 'Signals', 'CFD Units', 'Intrinsic_Value', 'Portfolio Value', 'Last Trade Profit']
-        return self.series.to_csv('Portfolio_Simulation.csv', columns=header)
+        return self.series.to_csv("Portfolio_Simulation.csv", columns=header)
 
     def Simulation_KPI_csv_outputs(self):
-        self.series, self.parameter, end_cash, number_of_long_trades, number_of_short_trades, Total_Strategy_Return, Total_Index_Return = self.simulate()
+        self.series, self.parameter, end_cash, number_of_long_trades, number_of_short_trades, Total_Strategy_Return, Total_Index_Return, end_Portfolio_Value = self.simulate()
         KPI_dataframe = pd.DataFrame({'Simulation Parameters': [self.parameter],
                                       'End Cash': [end_cash],
                                       'Number of Long Trades': [number_of_long_trades],
                                       'Number of Short Trades': [number_of_short_trades],
                                       'Total Strategy Returns': [Total_Strategy_Return],
-                                      'Total Index Return': [Total_Index_Return]})
+                                      'Total Index Return': [Total_Index_Return],
+                                      'Portfolio Value ': [end_Portfolio_Value]})
         return KPI_dataframe.to_csv('Simulation_KPI.csv')
 
 
