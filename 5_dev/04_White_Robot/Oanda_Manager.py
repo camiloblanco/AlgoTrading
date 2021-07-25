@@ -3,9 +3,6 @@ import pandas as pd
 from dateutil.relativedelta import relativedelta
 from datetime import date
 from datetime import timedelta
-#import tables as tb
-#from tables import *
-#from Asset_Table import Asset_Table_Description
 from pandas.tseries.offsets import BDay
 
 # Class to manage the CRUD for OANDA API
@@ -105,20 +102,17 @@ class Oanda_Manager():
 
     # Merges the candle data from inception till current date on a specific asset by dates
     def get_all_candles_data(self, asset_name, granularity, starting_date, end_date):
-        start_date = pd.date_range(starting_date, end_date, freq='AS').tolist()
-        end_date = pd.date_range(starting_date, end_date, freq='A').tolist()
-        end_date.append(date.today() - timedelta(days = 1))
+        start_date = pd.date_range(starting_date, end_date, freq='6M').tolist()
+        end_date = pd.date_range(starting_date, end_date, freq='6M').tolist()
+        end_date.append(date.today() - timedelta(days=1))
         starting_idx = 0
         Merged_candle_Dataframe = pd.DataFrame()
         while starting_idx < len(start_date):
             candle_data = self.get_candles_dates(asset_name, granularity, start_date[starting_idx],
-                                                 end_date[starting_idx])
+                                                 end_date[starting_idx+1])
             Merged_candle_Dataframe = Merged_candle_Dataframe.append(candle_data)
             starting_idx += 1
             #print(starting_idx)
-        #isBusinessDay = BDay().onOffset
-        #Business_days = candle_data.index.map(isBusinessDay)
-        #Business_days_candle_data = candle_data[Business_days]
         return Merged_candle_Dataframe
     
     # Saves a CSV file for  data of a certain asset class
